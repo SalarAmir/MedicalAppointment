@@ -49,8 +49,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            createForm('Form 1', ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6']);
-            createForm('Form 2', ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6']);
+            for (let i = 1; i <= 15; i++) {
+                createForm(`Form ${i}`, ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6']);
+            }
         });
     </script>
 </body>
