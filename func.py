@@ -5,10 +5,7 @@ import time
 import webbrowser
 import numpy as np
 
-pag.FAILSAFE = False
-
-def open_page(file_path):
-    webbrowser.open(file_path)
+# pag.FAILSAFE = False
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -19,7 +16,7 @@ def extract_text_from_image(head_region):
     print("text extracted")
     return text.strip()
 
-if __name__ == "__main__":
+def oldMain():
     # Open the HTML file in a web browser
     webbrowser.open('index.html')
     time.sleep(1)
@@ -40,7 +37,8 @@ if __name__ == "__main__":
         # top=header[1]
         # width=header[2]
         # height=header[3]
-        header_region = (np.int64(header[0]), np.int64(header[1]), header[2], header[3])
+        # header_region = (8, 196,61,25)
+        header_region = tuple(int(head) for head in header)
         print(header_region)
         header_text = extract_text_from_image(header_region)
         if header_text in seen_texts:
@@ -58,6 +56,15 @@ if __name__ == "__main__":
     buttons_per_form = 6
     print(f'buttons found {len(radio_buttons)}\n')
     print(f'forms found {len(form_headers)}\n')
+
+
+if __name__ == "__main__":
+    webbrowser.open('index.html')   
+    time.sleep(2)
+    ss=pag.screenshot("ss.png")
+    res=pytesseract.image_to_data(ss)
+    print(res)
+    
     
     # form_buttons = []
     # for i in range(num_forms):
