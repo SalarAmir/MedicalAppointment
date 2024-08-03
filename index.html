@@ -6,28 +6,52 @@
     <title>Radio Button Test</title>
 </head>
 <body>
-    <h1>Select an Option</h1>
-    <form>
-        <input type="radio" id="option1" name="option" value="option1">
-        <label for="option1">Option 1</label><br>
-        <input type="radio" id="option2" name="option" value="option2">
-        <label for="option2">Option 2</label><br>
-        <input type="radio" id="option3" name="option" value="option3">
-        <label for="option3">Option 3</label><br>
-        <input type="radio" id="option4" name="option" value="option4">
-        <label for="option4">Option 4</label><br>
-        <input type="radio" id="option5" name="option" value="option5">
-        <label for="option5">Option 5</label><br>
-    </form>
-
+    <h1>Select Options</h1>
+    <div id="forms-container"></div>
+    
     <button onclick="clickRadioButton()">Click Radio Button</button>
     <p id="result"></p>
 
     <script>
-        function clickRadioButton() {
-            const selectedOption = document.querySelector('input[name="option"]:checked').value;
-            alert(`Selected option: ${selectedOption}`);
+        function createForm(heading, radioLabels) {
+            const form = document.createElement('form');
+            const formHeading = document.createElement('h2');
+            formHeading.textContent = heading;
+            form.appendChild(formHeading);
+            
+            radioLabels.forEach((label, index) => {
+                const radioId = `${heading.toLowerCase().replace(/ /g, '_')}_option${index + 1}`;
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.id = radioId;
+                radioInput.name = heading;
+                radioInput.value = label;
+                
+                const radioLabel = document.createElement('label');
+                radioLabel.htmlFor = radioId;
+                radioLabel.textContent = label;
+
+                form.appendChild(radioInput);
+                form.appendChild(radioLabel);
+                form.appendChild(document.createElement('br'));
+            });
+
+            document.getElementById('forms-container').appendChild(form);
         }
+
+        function clickRadioButton() {
+            const selectedOptions = [];
+            document.querySelectorAll('input[type="radio"]:checked').forEach((radio) => {
+                selectedOptions.push(`${radio.name}: ${radio.value}`);
+            });
+
+            alert(`Selected options: ${selectedOptions.join(', ')}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createForm('Form 1', ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6']);
+            createForm('Form 2', ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6']);
+        });
     </script>
 </body>
 </html>
