@@ -1,0 +1,7 @@
+ABD
+-- backend setup with google cloud
+
+SALAR
+-- card information
+-- google cloud CLI
+-- use GCloud OCR to make good algorithm for automation
