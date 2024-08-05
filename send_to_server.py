@@ -46,54 +46,71 @@ def get_headings_bounds(texts, headings, offset_lt):
             # break
     return heading_bounds
 
-def get_text_bounds(texts, text, offset_lt):
-    text_found_bounds = []
+def find_text_in_bounds(texts, text_to_find, bounds, offset_lt):
+    
+    found_bounds = []
     for text in texts:
-        if  text == text["description"]:
-            print(f'\n"{text["description"]}"')
+        if text["description"] == text_to_find:
             vertices = [
                 to_screen_coords((vertex['x'],vertex['y']), offset_lt) for vertex in text["boundingPoly"]["vertices"]
             ]
-            text_found_bounds.append(vertices)
-            # print("bounds: {}".format(",".join(vertices)))
-            # break
-    return text_found_bounds
+            if bounds[0][1] < vertices[0][1] and bounds[2][1] > vertices[2][1]: 
+                found_bounds = vertices
+                break
+
+    return found_bounds
+
 
 if __name__ == "__main__":
     # webbrowser.open('index.html')
     time.sleep(2)
     
     offset_lt = (0, 120)
-    ss = ss_cutoff(0, 0, 120, 30, pag.size(), "ss.png")
-    
+    screen_size = pag.size()
+    ss = ss_cutoff(0, 0, 120, 30, screen_size, "ss.png")
     
     response = get_annotations("ss.png")
     annotations = response["data"]["textAnnotations"]
     
-    functional_stats = {"M1800":"02", "M1810":"00", "M1820":"01", "M1830":"05", "M1840":"04", "M1845":"00", "M1860":"01"}
+    functional_stats = {"M1800":"02", "M1810":"03", "M1820":"01", "M1830":"05", "M1840":"04", "M1845":"00", "M1860":"01"}
     bounds = get_headings_bounds(annotations, functional_stats.keys(), offset_lt)
-    regions = {}
+    form_regions = {}
     found_headings = list(bounds.keys())
     if(len(found_headings) == 0):
         print("No headings found")
         print_texts(annotations)
         input("Press enter to exit")
     else:
-        for i in range(len(found_headings)):
-            if i == len(found_headings)-1:
-                bottom_off = 0
-            else:
-                bottom_off = bounds[found_headings[i+1]][2][1]
-            ss_region = (0, 0, bounds[found_headings[i]][0][1],  bottom_off)
-            regions[found_headings[i]] = ss_region
-        print(f"ss of {found_headings[0]}")
-        curr_region = regions[found_headings[0]]
-        ss_cutoff(curr_region[0], curr_region[1], curr_region[2], curr_region[3], pag.size(), "test.png")
+        for i in range(len(found_headings)-1):
+            # ss_region = (0, 0, bounds[found_headings[i]][0][1],  bottom_off)
+            region_vertices = [
+                bounds[found_headings[i]][0],
+                bounds[found_headings[i]][1],
+                bounds[found_headings[i+1]][2],
+                bounds[found_headings[i+1]][3]
+            ]
+            form_regions[found_headings[i]] = region_vertices
+        
+        print(form_regions)
+        for head in form_regions:
+            option_text_loc = find_text_in_bounds(annotations, functional_stats[head], form_regions[head], offset_lt)
+            print(option_text_loc)
+            time.sleep(1)
+            pag.moveTo(option_text_loc[0])
+        # pag.moveTo(option_text_loc[0])
+            
+            
+            
+        
+        
+        # print(f"ss of {found_headings[0]}")
+        # curr_region = regions[found_headings[0]]
+        # print(curr_region)
+        # ss_cutoff(curr_region[0], curr_region[1], curr_region[2], screen_size[1]-curr_region[3], screen_size, "test.png")
     
     
     
-    form_bounds = {}
-    print(bounds)
+    # form_bounds = {}
     
     # for bound in bounds:
     #     loc = bound[0]
