@@ -70,7 +70,7 @@ if __name__ == "__main__":
     response = get_annotations("ss.png")
     annotations = response["data"]["textAnnotations"]
     
-    functional_stats = {"M1800 Grooming":"02", "M1810":"00", "M1820":"01", "M1830":"05", "M1840":"04", "M1845":"00", "M1860":"01"}
+    functional_stats = {"M1800":"02", "M1810":"00", "M1820":"01", "M1830":"05", "M1840":"04", "M1845":"00", "M1860":"01"}
     bounds = get_headings_bounds(annotations, functional_stats.keys(), offset_lt)
     regions = {}
     found_headings = list(bounds.keys())
