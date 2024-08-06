@@ -12,8 +12,8 @@ def get_annotations(image_path):
         return response.json()
 
 
-def ss_cutoff(offset_l, offset_r, offset_t, offset_b, size: tuple, path):
-    ss = pag.screenshot(path,region=(offset_l, offset_t, size[0]-offset_r-offset_l, size[1]-offset_b-offset_t))
+def ss_cutoff(box:tuple, size: tuple, path):
+    ss = pag.screenshot(path,region=box)
     return ss
 
 def to_screen_coords(coords:tuple, offset_lt:tuple):
@@ -94,6 +94,8 @@ if __name__ == "__main__":
         print(form_regions)
         for head in form_regions:
             option_text_loc = find_text_in_bounds(annotations, functional_stats[head], form_regions[head], offset_lt)
+            ss_box = ()
+            button_ss = ss_cutoff(option_text_loc[]))
             print(option_text_loc)
             time.sleep(1)
             pag.moveTo(option_text_loc[0])
