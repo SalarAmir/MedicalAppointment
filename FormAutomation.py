@@ -133,12 +133,13 @@ if __name__ == "__main__":
         "M1840":4,
         "M1845":0,
         "M1850":2,
-        "M1860":1
+        "M1860":1,
+        "TUG":2
         
     }
     remaining_forms = list(form_heading_options_index.keys())
-    while len(remaining_forms) > 0:
-        # time.sleep(2)
+    while len(remaining_forms) > 1:
+        time.sleep(1)
         screen_ss = ScreenShot((0, 120, screen_size[0], screen_size[1]-120-40), "first_ss.png")
     
         response = get_annotations(screen_ss)
@@ -160,7 +161,8 @@ if __name__ == "__main__":
             ))
             forms_on_screen[found_headings[i]] = form_box
             button_locs = sort_boxes(find_all_img_in_bounds("button.png", form_box,0.9))
-            
+            if(len(button_locs) == 0):
+                continue
             moveTo(button_locs[form_heading_options_index[found_headings[i]]].centre)
             click()
             move(-50, 0)
@@ -170,5 +172,5 @@ if __name__ == "__main__":
             
         
         
-        scroll(-100)
+        scroll(-200)
     
