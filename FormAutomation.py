@@ -1,9 +1,11 @@
 from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move
 import time
 from requests import post
+from PIL import Image
 
 
 # box is a tuple of 4 values: (left, top, width, height)
+# ((x1,y1), (x2,y2).... (x3,x4))
 class Box:
     def __init__(self, box) -> None:
         # when l, t, w, h
@@ -29,6 +31,7 @@ class Box:
         return f"{self.box_tuple}"
     def is_within(self, box):
         return self.l >= box.l and self.t >= box.t and self.l + self.w <= box.l + box.w and self.t + self.h <= box.t + box.h
+
 class ScreenShot:
     def __init__(self, box, file_path=None) -> None:
         self.box = Box(box)
@@ -82,6 +85,22 @@ class ScreenShot:
                 vertices = Box(tuple((vertex['x']+self.box.l, vertex['y']+self.box.t) for vertex in text["boundingPoly"]["vertices"]))
                 found_texts[text["description"]] = vertices
         return found_texts
+
+class Form:
+    def __init__(self, heading:str, heading_box:Box) -> None:
+        self.heading = heading
+        self.heading_box = heading_box
+        self.buttons = []
+        self.border_box = None
+    
+    def establish_borders(self, screen_ss:ScreenShot):
+        top_border = self.heading_box.t
+        left_border = self.heading_box.l
+        right_border = find_form_border_right(screen_ss, self.heading_box)
+        bottom_border = find_form_border_bottom(screen_ss, self.heading_box)
+        self.border_box = Box((left_border, top_border, right_border - left_border, bottom_border - top_border))
+
+
 def find_all_img_in_bounds(image, bound_box, confidence):
     return_l = []
     
@@ -112,7 +131,8 @@ def get_annotations(ss:ScreenShot):
 
 server_url = 'https://googlecloudapi.vercel.app/api/v1'
 
-if __name__ == "__main__":
+
+def old_main():
     time.sleep(2)
     screen_size = size()
     form_heading_options = {
@@ -135,7 +155,6 @@ if __name__ == "__main__":
         "M1850":2,
         "M1860":1,
         "TUG":2
-        
     }
     remaining_forms = list(form_heading_options_index.keys())
     while len(remaining_forms) > 1:
@@ -169,8 +188,67 @@ if __name__ == "__main__":
             
             print(button_locs)
             remaining_forms.remove(found_headings[i])
-            
-        
         
         scroll(-200)
+        
+def pix_within_threshold(pix, target_color, threshold):
+    return all(abs(pix[i] - target_color[i]) <= threshold for i in range(3))
     
+def find_form_border_bottom(image:ScreenShot, heading_box:Box):
+    pixels = image.ss.load()
+    start = heading_box.vertices[2]
+    border_color = (60,86,69)
+    for y in range(start[1], image.box.h):
+        print(pixels[start[0], y])
+        moveTo(start[0], y)
+        if pix_within_threshold(pixels[start[0], y], border_color, 10):
+            return y
+            # print("found")
+            # for x in range(100):
+            #     print(pixels[start[0] + x, y-1])
+            #     moveTo(start[0] + x, y)
+                
+            # line_pixels = [pix_within_threshold(pixels[x, y], border_color, 10) for x in range(100)]
+            # if all (line_pixels):
+            #     return y
+            # print("L")
+
+def find_form_border_right(image:ScreenShot, heading_box:Box):
+    pixels = image.ss.load()
+    start = heading_box.vertices[1]
+    
+    for x in range(start[0], image.box.w):
+        if pix_within_threshold(pixels[x, start[1]], (80,80,80), 10):
+            return x
+    
+if __name__ == "__main__":
+    screen_size = size()
+    time.sleep(1)
+    screen_ss = ScreenShot((0, 120, screen_size[0], screen_size[1]-120-40), "first_ss.png")
+
+    response = get_annotations(screen_ss)
+    annotations = response["data"]["textAnnotations"]
+    
+    form_heading_options_index = {
+        "M1800":2,
+        "M1810":3,
+        "M1820":1,
+        "M1830":5,
+        "M1840":4,
+        "M1845":0,
+        "M1850":2,
+        "M1860":1,
+        "TUG":2
+    }
+    remaining_forms = list(form_heading_options_index.keys())
+    
+    found_headings_boxes = screen_ss.find_texts(remaining_forms, annotations)
+    box1 = found_headings_boxes["M1820"]
+    pixels = Image.open("first_ss.png").load()
+    print(pixels[241,444])
+    right_bord = find_form_border_right(screen_ss, box1)
+    bottom_bord = find_form_border_bottom(screen_ss, box1)
+    print(right_bord, bottom_bord)
+    moveTo(right_bord, box1.centre[1])
+    time.sleep(1)
+    moveTo(box1.centre[0], bottom_bord)
