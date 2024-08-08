@@ -3,8 +3,6 @@ import numpy as np
 from pyautogui import screenshot
 from PIL import Image
 
-def num_within_threshold(num, target, threshold):
-    return abs(num - target) < threshold
 
 def image_skeleton(image):
     size = np.size(image)
@@ -26,10 +24,11 @@ def image_skeleton(image):
     return skel
 
 def get_hough_lines(image):
-    edges = cv2.Canny(image, 50, 150, apertureSize=3)
+    edges = cv2.Canny(image, 50, 150, apertureSize=7)
     edges = cv2.dilate(edges, np.ones((3, 3), np.uint8))
     edges = image_skeleton(edges)
-    lines = cv2.HoughLines(edges, 1, np.pi/180, 300)
+    # cv2.imshow("Edges", edges)
+    lines = cv2.HoughLines(edges, 1, np.pi/180, 400)
     lines = lines.reshape(-1, 2)
     # print(lines)
     return lines
@@ -70,8 +69,8 @@ def get_image_lines(image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
     lines = get_hough_lines(image)
     # cv2.imshow("Lines", draw_lines(image, lines))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     lines = line_coords(lines)
     return lines
 
