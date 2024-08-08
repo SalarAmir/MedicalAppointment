@@ -3,7 +3,6 @@ import time
 from requests import post
 from PIL import Image
 
-
 # box is a tuple of 4 values: (left, top, width, height)
 # ((x1,y1), (x2,y2).... (x3,x4))
 class Box:
