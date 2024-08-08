@@ -24,11 +24,13 @@ def image_skeleton(image):
     return skel
 
 def get_hough_lines(image):
-    edges = cv2.Canny(image, 50, 150, apertureSize=7)
+    edges = cv2.Canny(image, 50, 250, apertureSize=7)
     edges = cv2.dilate(edges, np.ones((3, 3), np.uint8))
+    # edges = cv2.erode(edges, np.ones((3, 3), np.uint8))
+    # edges = cv2.dilate(edges, np.ones((3, 3), np.uint8))
     edges = image_skeleton(edges)
     # cv2.imshow("Edges", edges)
-    lines = cv2.HoughLines(edges, 1, np.pi/180, 400)
+    lines = cv2.HoughLines(edges, 1, np.pi/180, 280)
     lines = lines.reshape(-1, 2)
     # print(lines)
     return lines

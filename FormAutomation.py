@@ -41,6 +41,9 @@ class ScreenShot:
         
         # self.screen_size = size()
     
+    def get_pixel(self, x, y):
+        return self.ss.getpixel((x-self.box.l, y-self.box.t))
+    
     def find_all_img(self, image, confidence=0.9):
         # try:
         found_coords = list(locateAll(needleImage=image, haystackImage=self.ss, confidence=confidence))
@@ -89,9 +92,10 @@ class ScreenShot:
         for text in texts_all:
             if text["description"] in texts_to_find:
                 vertices = Box(tuple((vertex['x']+self.box.l, vertex['y']+self.box.t) for vertex in text["boundingPoly"]["vertices"]))
-                if not found_texts.get(text["description"]):
-                    found_texts[text["description"]] = [vertices]
-                found_texts[text["description"]].append(vertices)
+                # if not found_texts.get(text["description"]):
+                #     found_texts[text["description"]] = [vertices]
+                # found_texts[text["description"]].append(vertices)
+                found_texts[text["description"]] = vertices
         return found_texts
 
     def get_lines(self):
@@ -112,8 +116,69 @@ class Form:
         self.ss = ScreenShot(self.border_box.box_tuple, f"form_{self.heading}.png")
         self.button_path = "button.png"
         self.selected_button_path = "button_selected.png"
+    
+    def establish_borders(self, screen_ss:ScreenShot):
+        bottom_colors = [
+            (38, 38, 38),
+            (29,29,29),
+            (110, 110, 110),
+            (73, 73, 73),
+            (13,13,13),
+            (117,117,117),
+            (99,99,99),
+            (143,143,143),
+            (86,86,86),
+            (81,81,81),
+        ]
+
+        for y in range(self.heading_box.t, screen_ss.box.t + screen_ss.box.h):
+            # moveTo((self.heading_box.l, i))
+            pixel = screen_ss.get_pixel(self.heading_box.l, y)
+            if any(pix_within_threshold(pixel, bottom_color, 5) for bottom_color in bottom_colors):
+                valid = True
+                for x in range(self.heading_box.l, 10):
+                    pixel = screen_ss.get_pixel(x, y)
+                    if not any(pix_within_threshold(pixel, bottom_color, 5) for bottom_color in bottom_colors):
+                        valid = False
+                
+                if valid:
+                    self.border_box.h = y - self.heading_box.t
+                    break
+        # moveTo((self.border_box.l, self.heading_box.t + self.border_box.h))
         
-    def find_buttons(self, button_img, confidence):
+        right_colors = [
+            (67,67,67),
+            (120,120,120),
+            (144,144,144),
+            (58,58,58)
+        ]
+        for x in range(self.heading_box.l, screen_ss.box.l + screen_ss.box.w):
+            pixel = screen_ss.get_pixel(x, self.heading_box.t)
+            if any(pix_within_threshold(pixel, right_color, 5) for right_color in right_colors):
+                valid = True
+                
+                for y in range(self.heading_box.t, 10):
+                    pixel = screen_ss.get_pixel(x, y)
+                    if not any(pix_within_threshold(pixel, right_color, 5) for right_color in right_colors):
+                        valid = False
+                
+                if valid:
+                    self.border_box.w = x - self.heading_box.l
+                    
+                    break
+        # print(self.border_box)
+        # print(self.border_box.w, self.border_box.h)
+        new_box = Box((
+            self.border_box.l,
+            self.border_box.t,
+            self.border_box.w,
+            self.border_box.h
+        ))
+        self.border_box = new_box
+        self.ss = ScreenShot(self.border_box.box_tuple, f"form_{self.heading}.png")
+        # moveTo((self.border_box.l+self.border_box.w, self.border_box.t+self.border_box.h))
+        
+    def find_buttons(self, confidence):
         try:
             self.buttons = self.ss.find_all_img(self.button_path, confidence)
         except:
@@ -128,13 +193,19 @@ class Form:
         self.buttons = sort_boxes(self.buttons)
         
         return self.buttons
+    
+    def click_button(self, button_index):
+        moveTo(self.buttons[button_index].centre)
+        click()
+        moveTo(100, 100)
     def click_all_buttons(self):
         for button in self.buttons:
             moveTo(button.centre)
             # click()
-            time.sleep(1)
+            # time.sleep(1)
     
-    
+def pix_within_threshold(pix1, pix2, threshold):
+    return all(abs(pix1[i] - pix2[i]) < threshold for i in range(3))
 def find_all_img_in_bounds(image, bound_box, confidence):
 
     ss_in_bounds = ScreenShot(bound_box.box_tuple, "temp_ss.png")
@@ -253,25 +324,63 @@ if __name__ == "__main__":
     bottom_bar = 80
     screen_ss = ScreenShot((0, top_bar, screen_size[0], screen_size[1]-top_bar-bottom_bar), "first_ss.png")
     
-    lines = screen_ss.get_lines()
+    # lines = screen_ss.get_lines()
     # print(lines)
-    horizontals, verticals = lines
+    # horizontals, verticals = lines
     headings_choices = {
+        # "B0200":0,
+        "C1310A":0,
+        "C1310B":1,
+        "C1310C":2,
+        "C1310D":3,
+        
+        "M1700":2,
+        "M1710":3,
+        "M1720":1,
+        
+        "D0150A1":0,
+        "D0150A2":1,
         "D0150B1":3,
         "D0150B2":2,
         "D0150C1":1,
+        "D0150C2":0,
+        "D0150D1":0,
+        "D0150D2":3,
+        "D0150E1":2,
+        "D0150E2":1,
+        "D0150F1":0,
+        # "D0150F2":0
+        "D0700":5,
+        "M2102_CARE_TYPE_SRC_SPRVSN":2,
+        
+        "M1800": 3,
+        "M1810": 1,
+        "M1820": 2,
+        "M1830": 0,
+        "M1840": 0,
+        "M1845": 3,
+        "M1850": 1,
+        "M1860": 2,
+        
+        "GG0100": 0,
+        "GG0110": 1,
+        
+        "GG0130A": 0,
     }
     
     annotations = get_annotations(screen_ss)["data"]["textAnnotations"]
     found = screen_ss.find_texts(headings_choices.keys(), annotations)
-    headings_boxes = {}
-    for heading, boxes in found.items():
-        for box in boxes:
-            for y in verticals:
-                if num_within_threshold(box.l, y, 5):
-                    print(box, y)
-                    headings_boxes[heading] = box
-                    
+    # print(verticals)
+    print(found)
+    # headings_boxes = {}
+    # for heading, boxes in found.items():
+    #     for box in boxes:
+    #         for y in verticals:
+    #             if num_within_threshold(box.l, y, 5):
+    #                 # print(box, y)
+    #                 headings_boxes[heading] = box
+    
+    headings_boxes = found
     print("heading text boxes:", headings_boxes)
     
     remaining_headings = list(headings_boxes.keys())
@@ -280,30 +389,32 @@ if __name__ == "__main__":
         # populate forms on screen:
         for heading in remaining_headings:
             box = headings_boxes[heading]
-            lower_lines = horizontals[horizontals>box.t]
-            if len(lower_lines) == 0:
-                print(f"skipping {heading} ll")
-                continue
-            bottom_border = np.min(lower_lines)
-            print(f"bottom border: {bottom_border}, box bottom: {screen_ss.box.t+screen_ss.box.h}")
-            if num_within_threshold(bottom_border, screen_ss.box.t+screen_ss.box.h, 5):
-                print(f"skipping {heading}")
-                continue
-            right_border = np.min(verticals[verticals>box.l+box.w])
+            # lower_lines = horizontals[horizontals>box.t]
+            # if len(lower_lines) == 0:
+            #     print(f"skipping {heading} ll")
+            #     continue
+            # bottom_border = np.min(lower_lines)
+            # print(f"bottom border: {bottom_border}, box bottom: {screen_ss.box.t+screen_ss.box.h}")
+            # if num_within_threshold(bottom_border, screen_ss.box.t+screen_ss.box.h, 5):
+            #     print(f"skipping {heading}")
+            #     continue
+            # right_border = np.min(verticals[verticals>box.l+box.w])
             
             form_box = Box((
                 box.l,
                 box.t,
-                int(abs(right_border - box.l)),
-                int(abs(bottom_border - box.t))
+                int(abs(screen_size[0] - box.l)),
+                int(abs(screen_size[1] - box.t))
             ))
             
             form_obj = Form(heading, box, form_box)
-            form_obj.find_buttons("button.png", 0.9)
-            # form_obj.click_all_buttons()
-            print(form_obj.buttons)
-            moveTo((right_border, bottom_border))
-            time.sleep(2)
+            form_obj.establish_borders(screen_ss)
+            form_obj.find_buttons( 0.8)
+            
+            form_obj.click_all_buttons()
+            # print(form_obj.buttons)
+            # moveTo((right_border, bottom_border))
+            # time.sleep(2)
             remaining_headings.remove(heading)
             pass
     
