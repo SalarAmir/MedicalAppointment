@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from pyautogui import screenshot
+from PIL import Image
 
 def num_within_threshold(num, target, threshold):
     return abs(num - target) < threshold
@@ -26,7 +27,9 @@ def image_skeleton(image):
 
 def get_hough_lines(image):
     edges = cv2.Canny(image, 50, 150, apertureSize=3)
-    lines = cv2.HoughLines(edges, 1, np.pi/180, 200)
+    edges = cv2.dilate(edges, np.ones((3, 3), np.uint8))
+    edges = image_skeleton(edges)
+    lines = cv2.HoughLines(edges, 1, np.pi/180, 300)
     lines = lines.reshape(-1, 2)
     # print(lines)
     return lines
@@ -39,8 +42,8 @@ def get_cardinal_lines(lines):
 
 def line_coords(lines):
     # print(lines)
-    horizontal = lines[lines[:, 1] == 0,0]
-    vertical = lines[lines[:, 1] == np.pi/2,0]
+    horizontal = lines[lines[:, 1] == np.pi/2,0]
+    vertical = lines[lines[:, 1] == 0,0]
 
     return horizontal, vertical
 
@@ -60,14 +63,20 @@ def draw_lines(image, lines):
         cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 2)
     return image
 
+def get_image_lines(image):
+    if isinstance(image, Image.Image):
+        print(type(image))
+        
+        image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    lines = get_hough_lines(image)
+    # cv2.imshow("Lines", draw_lines(image, lines))
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    lines = line_coords(lines)
+    return lines
+
 if __name__ == "__main__":
     image = cv2.imread("first_ss.png", 0)
-    # image = np.array(screenshot())
-    # image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
-    # image = cv2.bitwise_not(image)
-    # image = image_skeleton(image)
-    
-    # cv2.imshow("Skeleton", image)
     
     lines = get_hough_lines(image)
     cv2.imshow("Lines", draw_lines(cv2.cvtColor(image, cv2.COLOR_GRAY2BGR), lines))
