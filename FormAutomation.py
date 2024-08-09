@@ -1,12 +1,15 @@
 import time
 import numpy as np
-from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move
+from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move , confirm
 from requests import post
 
 from ImageProcessing import get_image_lines
 
 # box is a tuple of 4 values: (left, top, width, height)
 # ((x1,y1), (x2,y2).... (x3,x4))
+
+
+
 class Box:
     def __init__(self, box) -> None:
         # when l, t, w, h
@@ -241,6 +244,7 @@ def old_main():
     }
     form_heading_options_index = {
         "M1800":2,
+        "M0150":1,
         "M1810":3,
         "M1820":1,
         "M1830":5,
@@ -248,6 +252,12 @@ def old_main():
         "M1845":0,
         "M1850":2,
         "M1860":1,
+        "B0200":0,
+        "B1000":1,
+        "B1300":1,
+        "C0300A":0,
+        "C0300B":1,
+        "C0300C":1,
         "D0150F1":0,
         "D0150F2 Symptom":0
     }
@@ -361,10 +371,15 @@ if __name__ == "__main__":
         "M1845": 3,
         "M1850": 1,
         "M1860": 2,
-        
+        "B0200":0,
+        "B1000":1,
+        "B1300":1,
+        "C0300A":0,
+        "C0300B":1,
+        "C0300C":1,
+        "M0150":1,
         "GG0100": 0,
-        "GG0110": 1,
-        
+        "GG0110": 1,        
         "GG0130A": 0,
     }
     
