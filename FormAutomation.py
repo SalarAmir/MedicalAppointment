@@ -121,64 +121,96 @@ class Form:
         self.selected_button_path = "button_selected.png"
     
     def establish_borders(self, screen_ss:ScreenShot):
-        bottom_colors = [
-            (38, 38, 38),
-            (29,29,29),
-            (110, 110, 110),
-            (73, 73, 73),
-            (13,13,13),
-            (117,117,117),
-            (99,99,99),
-            (143,143,143),
-            (86,86,86),
-            (81,81,81),
-        ]
-
-        for y in range(self.heading_box.t, screen_ss.box.t + screen_ss.box.h):
-            # moveTo((self.heading_box.l, i))
-            pixel = screen_ss.get_pixel(self.heading_box.l, y)
-            if any(pix_within_threshold(pixel, bottom_color, 5) for bottom_color in bottom_colors):
-                valid = True
-                for x in range(self.heading_box.l, 10):
-                    pixel = screen_ss.get_pixel(x, y)
-                    if not any(pix_within_threshold(pixel, bottom_color, 5) for bottom_color in bottom_colors):
-                        valid = False
-                
-                if valid:
-                    self.border_box.h = y - self.heading_box.t
-                    break
-        # moveTo((self.border_box.l, self.heading_box.t + self.border_box.h))
+        # Convert the screenshot to grayscale
+        gray_image = screen_ss.ss.convert('L')
         
-        right_colors = [
-            (67,67,67),
-            (120,120,120),
-            (144,144,144),
-            (58,58,58)
-        ]
-        for x in range(self.heading_box.l, screen_ss.box.l + screen_ss.box.w):
-            pixel = screen_ss.get_pixel(x, self.heading_box.t)
-            if any(pix_within_threshold(pixel, right_color, 5) for right_color in right_colors):
-                valid = True
-                
-                for y in range(self.heading_box.t, 10):
-                    pixel = screen_ss.get_pixel(x, y)
-                    if not any(pix_within_threshold(pixel, right_color, 5) for right_color in right_colors):
-                        valid = False
-                
-                if valid:
-                    self.border_box.w = x - self.heading_box.l
-                    
-                    break
-        # print(self.border_box)
-        # print(self.border_box.w, self.border_box.h)
-        new_box = Box((
-            self.border_box.l,
-            self.border_box.t,
-            self.border_box.w,
-            self.border_box.h
-        ))
+        # Function to check if a pixel is part of a line
+        def is_line_pixel(x, y, direction):
+            if gray_image.getpixel((x, y)) > 220:
+                return False
+            if direction == 'horizontal':
+                line_length = 200
+                return all(abs(gray_image.getpixel((x+i, y)) - gray_image.getpixel((x, y))) < 1 for i in range(line_length))
+            
+            else:  # vertical
+                line_length = 20
+                return all(abs(gray_image.getpixel((x, y+i)) - gray_image.getpixel((x, y))) < 1 for i in range(line_length))
+
+        # Find bottom border
+        for y in range(self.heading_box.t + self.heading_box.h, screen_ss.box.t + screen_ss.box.h):
+            if is_line_pixel(self.heading_box.l, y, 'horizontal'):
+                self.border_box.h = y - self.heading_box.t
+                break
+
+        # Find right border
+        for x in range(self.heading_box.l + self.heading_box.w, screen_ss.box.l + screen_ss.box.w):
+            if is_line_pixel(x, self.heading_box.t, 'vertical'):
+                self.border_box.w = x - self.heading_box.l
+                break
+        new_box = Box((self.border_box.l, self.border_box.t, self.border_box.w, self.border_box.h))
         self.border_box = new_box
+        print(new_box)
         self.ss = ScreenShot(self.border_box.box_tuple, f"form_{self.heading}.png")
+    
+    # def establish_borders(self, screen_ss:ScreenShot):
+        # bottom_colors = [
+        #     (38, 38, 38),
+        #     (29,29,29),
+        #     (110, 110, 110),
+        #     (73, 73, 73),
+        #     (13,13,13),
+        #     (117,117,117),
+        #     (99,99,99),
+        #     (143,143,143),
+        #     (86,86,86),
+        #     (81,81,81),
+        # ]
+
+        # for y in range(self.heading_box.t, screen_ss.box.t + screen_ss.box.h):
+        #     # moveTo((self.heading_box.l, i))
+        #     pixel = screen_ss.get_pixel(self.heading_box.l, y)
+        #     if any(pix_within_threshold(pixel, bottom_color, 5) for bottom_color in bottom_colors):
+        #         valid = True
+        #         for x in range(self.heading_box.l, 10):
+        #             pixel = screen_ss.get_pixel(x, y)
+        #             if not any(pix_within_threshold(pixel, bottom_color, 5) for bottom_color in bottom_colors):
+        #                 valid = False
+                
+        #         if valid:
+        #             self.border_box.h = y - self.heading_box.t
+        #             break
+        # # moveTo((self.border_box.l, self.heading_box.t + self.border_box.h))
+        
+        # right_colors = [
+        #     (67,67,67),
+        #     (120,120,120),
+        #     (144,144,144),
+        #     (58,58,58)
+        # ]
+        # for x in range(self.heading_box.l, screen_ss.box.l + screen_ss.box.w):
+        #     pixel = screen_ss.get_pixel(x, self.heading_box.t)
+        #     if any(pix_within_threshold(pixel, right_color, 5) for right_color in right_colors):
+        #         valid = True
+                
+        #         for y in range(self.heading_box.t, 10):
+        #             pixel = screen_ss.get_pixel(x, y)
+        #             if not any(pix_within_threshold(pixel, right_color, 5) for right_color in right_colors):
+        #                 valid = False
+                
+        #         if valid:
+        #             self.border_box.w = x - self.heading_box.l
+                    
+        #             break
+        # # print(self.border_box)
+        # # print(self.border_box.w, self.border_box.h)
+        # new_box = Box((
+        #     self.border_box.l,
+        #     self.border_box.t,
+        #     self.border_box.w,
+        #     self.border_box.h
+        # ))
+        # self.border_box = new_box
+        # self.ss = ScreenShot(self.border_box.box_tuple, f"form_{self.heading}.png")
         # moveTo((self.border_box.l+self.border_box.w, self.border_box.t+self.border_box.h))
         
     def find_buttons(self, confidence):
@@ -285,6 +317,7 @@ if __name__ == "__main__":
         "GG0100": 0,
         "GG0110": 1,        
         "GG0130A": 0,
+        "M0100": 9,
     }
     
     annotations = get_annotations(screen_ss)["data"]["textAnnotations"]
@@ -328,7 +361,7 @@ if __name__ == "__main__":
             
             form_obj = Form(heading, box, form_box)
             form_obj.establish_borders(screen_ss)
-            form_obj.find_buttons( 0.8)
+            form_obj.find_buttons(0.8)
             
             form_obj.click_all_buttons()
             # print(form_obj.buttons)
