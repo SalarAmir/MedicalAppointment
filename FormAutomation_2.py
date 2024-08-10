@@ -199,13 +199,16 @@ class Form:
     def click_button(self, button_index):
         moveTo(self.buttons[button_index].centre)
         click()
-        moveTo(100, 100)
-    
+        moveTo(100, 400)
+    def click_last(self):
+        moveTo(self.buttons[-1].centre)
+        click()
+        moveTo(100, 400)
     def unselect_button(self):
         if self.selected:
             moveTo(self.selected.centre)
             click()
-            moveTo(100, 100)
+            moveTo(100, 400)
     def click_all_buttons(self):
         for button in self.buttons:
             moveTo(button.centre)
@@ -508,7 +511,7 @@ def run_main_code(form_data):
             incorrect_buttons.discard(heading)
             
             form_obj.unselect_button()
-            form_obj.click_all_buttons()
+            form_obj.click_last()
             moveTo(100, screen_size[1]/2)
             # print(form_obj.buttons)
             # moveTo((right_border, bottom_border))
