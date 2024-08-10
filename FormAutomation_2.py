@@ -1,15 +1,13 @@
+import eel
 import time
+import os
 import numpy as np
-from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move , confirm
+from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move, confirm
 from requests import post
 
-from ImageProcessing import get_image_lines
+eel.init('web')
 
-# box is a tuple of 4 values: (left, top, width, height)
-# ((x1,y1), (x2,y2).... (x3,x4))
-
-
-
+# Box class definition
 class Box:
     def __init__(self, box) -> None:
         # when l, t, w, h
@@ -136,14 +134,14 @@ class ScreenShot:
                 # found_texts[text["description"]] = vertices
         return found_texts
 
-    def get_lines(self):
-        lines_found = get_image_lines(self.ss)
+    # def get_lines(self):
+    #     lines_found = get_image_lines(self.ss)
         
-        # lines_found[0] += self.box.t
-        # lines_found[1] += self.box.l
-        return (lines_found[0] + self.box.t, lines_found[1] + self.box.l)
+    #     # lines_found[0] += self.box.t
+    #     # lines_found[1] += self.box.l
+    #     return (lines_found[0] + self.box.t, lines_found[1] + self.box.l)
 
-
+# Form class definition
 class Form:
     def __init__(self, heading:str, heading_box:Box, border_box:Box) -> None:
         self.heading = heading
@@ -215,22 +213,25 @@ class Form:
             # click()
             # time.sleep(1)
     
+# Helper functions
 def pix_within_threshold(pix1, pix2, threshold):
     return all(abs(pix1[i] - pix2[i]) < threshold for i in range(3))
-def find_all_img_in_bounds(image, bound_box, confidence):
 
+def find_all_img_in_bounds(image, bound_box, confidence):
     ss_in_bounds = ScreenShot(bound_box.box_tuple, "temp_ss.png")
     found_coords = ss_in_bounds.find_all_img(image, confidence)
     return found_coords
 
-    
-# array of boxes, should be smallest x value first and smallest y value first
 def sort_boxes(boxes):
     boxes.sort(key=lambda x: x.l)
     boxes.sort(key=lambda x: x.t)
     return boxes
 
-def get_legit_headings(found):
+def num_within_threshold(num, target, threshold):
+    return abs(num - target) < threshold
+
+
+def get_legit_headings(found, screen_ss):
     legit_found = {}
     for heading, verts in found.items():
         for box in verts:
@@ -239,21 +240,19 @@ def get_legit_headings(found):
                 continue
             legit_found[heading] = box
             break
-
     return legit_found
 
-server_url = 'https://googlecloudapi.vercel.app/api/v1'
-
 def get_annotations(ss:ScreenShot):
+    server_url = 'https://googlecloudapi.vercel.app/api/v1'
     with open(ss.path, 'rb') as image:
         response = post(f'{server_url}/image/annotations', files={'file': image})
         return response.json()
 
-
 def num_within_threshold(num, target, threshold):
     return abs(num - target) < threshold
 
-if __name__ == "__main__":
+@eel.expose
+def run_main_code(form_data):
     screen_size = size()
     top_bar = 120
     bottom_bar = 80
@@ -450,57 +449,8 @@ if __name__ == "__main__":
         "0011004a":3,
         "00110Z1a":3,
     }
-    
-    headings_choices = {
-        
-        "M0100": 5,
-        "M0069": 1,
-        
-        # "B0200":0,
-        "C1310A":0,
-        "C1310B":1,
-        "C1310C":2,
-        "C1310D":3,
-        
-        "M1700":2,
-        "M1710":3,
-        "M1720":1,
-        
-        "D0150A1":0,
-        "D0150A2":1,
-        "D0150B1":3,
-        "D0150B2":2,
-        "D0150C1":1,
-        "D0150C2":0,
-        "D0150D1":0,
-        "D0150D2":3,
-        "D0150E1":2,
-        "D0150E2":1,
-        "D0150F1":0,
-        # "D0150F2":0
-        "D0700":5,
-        "M2102_CARE_TYPE_SRC_SPRVSN":2,
-        
-        "M1800": 3,
-        "M1810": 1,
-        "M1820": 2,
-        "M1830": 0,
-        "M1840": 0,
-        "M1845": 3,
-        "M1850": 1,
-        "M1860": 2,
-        "B0200":0,
-        "B1000":1,
-        "B1300":1,
-        "C0300A":0,
-        "C0300B":1,
-        "C0300C":1,
-        "M0150":1,
-        "GG0100": 0,
-        "GG0110": 1,        
-        "GG0130A": 0,
-    }
-    
+    headings_choices = { data["name"]:data["value"] for data in form_data}
+    print(headings_choices)
     # debugging stuff:
     found_text = set()
     found_legit = set()
@@ -528,11 +478,9 @@ if __name__ == "__main__":
             break
         
         found = screen_ss.find_texts(headings_options_count.keys(), annotations)
-
+        found = get_legit_headings(found, screen_ss)
+        
         (found_text.add(head) for head in found.keys())
-        
-        found = get_legit_headings(found)
-        
         (found_legit.add(head) for head in found.keys())
 
         # headings_boxes = found
@@ -575,8 +523,13 @@ if __name__ == "__main__":
     never_found = set(headings_options_count.keys()) - found_text
     never_legit = set(headings_options_count.keys()) - found_legit
     
+    print(f"Found: {found_text}")
     print(f"Never found: {never_found}")
+    # print(f"Found legit: {found_legit}")
     print(f"Never legit: {never_legit}")
     print(f"Incorrect buttons: {incorrect_buttons}")
     
     pass
+
+if __name__ == '__main__':
+    eel.start('index.html', size=(600, 500))

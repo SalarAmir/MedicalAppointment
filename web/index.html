@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/eel.js"></script>
+    <title>Form</title>
+</head>
+<body>
+
+    <!-- <div>
+        <label>M0069</label><br>
+        <input type="radio" name="M0069" value="2"> 2
+    </div> -->
+
+    <div id="main-form"></div>
+    <button onclick="submitForm()">Submit</button>
+
+    <script>
+
+
+        function createInputBox(heading, numButtons){
+            const form = document.createElement('form');
+            const label = document.createElement('label');
+            label.textContent = heading;
+            form.appendChild(label);
+
+            for (let i = 0; i < numButtons; i++) {
+                const radioId = `${heading}-${i+1}`;
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.id = radioId;
+                input.name = heading;
+                input.value = `${i+1}`;
+                form.appendChild(input);
+                // form.appendChild(document.createTextNode(i));
+                inputLabel = document.createElement('label');
+                inputLabel.textContent = `${i+1}`;
+                inputLabel.htmlFor = radioId;
+
+                form.appendChild(input);
+                form.appendChild(inputLabel);
+            }
+
+            document.getElementById('main-form').appendChild(form);
+        }
+
+        
+
+
+        // document.getElementById('setupForm').onsubmit = function(e) {
+        //     e.preventDefault();
+        //     // const formData = {
+        //     //     username: document.getElementById('username').value,
+        //     //     delay: document.getElementById('delay').value
+        //     // };
+            
+        //     if (confirm('Are you sure you want to start the automation?')) {
+        //         // eel.run_main_code(formData);
+        //     }
+        // }
+
+        function submitForm() {
+            const selectedOptions = []
+            const form = document.getElementById('main-form');
+            form.querySelectorAll('input[type="radio"]:checked').forEach((input) => {
+                selectedOptions.push({
+                    name: input.name,
+                    value: input.value
+                });
+            });
+            // const formData = new FormData(form);
+            
+            console.log(selectedOptions);
+            eel.run_main_code(selectedOptions);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // createInputBox('M0069', 5);
+            for (const [heading, numButtons] of Object.entries(headings_options_count)) {
+                createInputBox(heading, numButtons);
+            }
+        });
+
+        
+    const headings_options_count = {
+        "M0069" : 2,
+        "A1110B": 3,
+        
+        "M0080": 4,
+        "M0100": 8,
+        "M0110":4,
+        
+        "HCS_0110_Facility": 2,
+        //  "Blood Pressure": 2,
+        "B0200":5,
+        "B1000":6,
+        "B1300":7,
+        
+        "C0100":3,
+        "C0200":4,
+        "C0300A":5,
+        "C0300B":4,
+        "C0300C":4,
+        "C0400A":4,
+        "C0400B":4,
+        "C0400C":4,
+        
+        "C1310A":3,
+        "C1310B":4,
+        "C1310C":4,
+        "C1310D":4,
+        
+        "M1700":5,
+        "M1710":6,
+        "M1720":5,
+        
+        "D0150A1":4,
+        "D0150A2":4,
+        
+        "D0150B1":4,
+        "D0150B2":4,
+        
+        "D0150C1":4,
+        "D0150C2":4,
+        
+        "D0150D1":4,
+        "D0150D2":4,
+        
+        "D0150E1":4,
+        "D0150E2":4,
+        
+        "D0150F1":4,
+        "D0150F2":4,
+        
+        "D0150G1":4,
+        "D0150G2":4,
+        
+        "D0150H1":4,
+        "D0150H2":4,
+        
+        "D0150I1":4,
+        "D0150I2":4,
+        
+        "M1740":3,
+        "M1745":6,
+        
+        "M2102_CARE_TYPE_SRC_SPRVSN":5,
+        
+        "M1800":4,
+        "M1810":4,
+        "M1820":4,
+        "M1830":4,
+        "M1840":4,
+        "M1845":4,
+        "M1850":6,
+        "M1860":7,
+        
+        "GG0170A1":11,
+        "GG0170A2":11,
+        "GG0170B1":11,
+        "GG0170B2":11,
+        "GG0170C_MOBILITY_SOCROC_PERF":11,
+        "GG0170C_MOBILITY_DSCHG_GOAL":11,
+        "GG0170D1":11,
+        "GG0170D2":11,
+        "GG0170E1":11,
+        "GG0170E2":11,
+        "GG0170F1":11,
+        "GG0170F2":11,
+        "GG0170G1":11,
+        "GG0170G2":11,
+        "GG0170I1":11,
+        "GG0170I2":11,
+        "GG0170J1":11,
+        "GG0170J2":11,
+        "GG0170K1":11,
+        "GG0170K2":11,
+        "GG0170L1":11,
+        "GG0170L2":11,
+        "GG0170M1":11,
+        "GG0170M2":11,
+        // "GG0170N1":11,
+        "GG0170N2":11,
+        //  "GG0170O1":11,
+        "GG0170O2":11,
+        "GG0170P1":11,
+        "GG0170P2":11,
+        "GG0170Q1":11,
+        
+        "M1600":4,
+        "M1610":3,
+        "M1620":8,
+        "M1630":3,
+        
+        "M1400":5,
+        
+        "M1306":2,
+        
+        "M1322":5,
+        "M1324":5,
+        "M1330":4,
+        "M1332":4,
+        "M1334":3,
+        "M1340":3,
+        "M1342":4,
+        
+        "J0510":6,
+        "J0520":6,
+        "J0530":5,
+        
+        "K0520A1":3,
+        "K0520B1":3,
+        "K0520C1":3,
+        "K0520D1":3,
+        "K0520Z1":3,
+        
+        "M1870":6,
+        
+        "N0415A1":3,
+        "N0415A2":3,
+        "N0415E1":3,
+        "N0415E2":3,
+        "N0415F1":3,
+        "N0415F2":3,
+        "N0415H1":3,
+        "N0415H2":3,
+        "N0415I1":3,
+        "N0415I2":3,
+        "N0415J1":3,
+        "N0415J2":3,
+        "N0415Z1":3,
+        
+        "M2001":3,
+        "M2003":2,
+        "M2010":3,
+        "M2020":5,
+        "M2030":5,
+        
+        "00110A1a":3,
+        "00110A2a":3,
+        "00110A3a":3,
+        "00110A10a":3,
+        "00110B1a":3,
+        "00110C1a":3,
+        "00110C2a":3,
+        "00110C3a":3,
+        "00110C4a":3,
+        "00110D1a":3,
+        "00110D2a":3,
+        "00110D3a":3,
+        "00110E1a":3,
+        "00110F1a":3,
+        "00110G1a":3,
+        "00110G2a":3,
+        "00110G3a":3,
+        "00110H1a":3,
+        "00110H2a":3,
+        "00110H3a":3,
+        "00110H4a":3,
+        "00110H10a":3,
+        "00110I1a":3,
+        "00110J1a":3,
+        "00110J2a":3,
+        "00110J3a":3,
+        
+        "0011001a":3,
+        "0011002a":3,
+        "0011003a":3,
+        "0011004a":3,
+        "00110Z1a":3,
+    }
+    
+    </script>
+</body>
+</html>
