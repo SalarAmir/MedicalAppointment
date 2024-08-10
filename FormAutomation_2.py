@@ -190,7 +190,7 @@ class Form:
         # remove buttons which are within pixels of each other
         if(len(self.buttons) == 0):
             return self.buttons
-        self.buttons = [self.buttons[0]] + [self.buttons[i] for i in range(1, len(self.buttons)) if not any(abs(self.buttons[i].l - self.buttons[j].l) < 10 and abs(self.buttons[i].t - self.buttons[j].t) < 10 for j in range(i))]
+        self.buttons = [self.buttons[0]] + [self.buttons[i] for i in range(1, len(self.buttons)) if not any(abs(self.buttons[i].l - self.buttons[j].l) < 4 and abs(self.buttons[i].t - self.buttons[j].t) < 4 for j in range(i))]
         
 
         # self.buttons += self.ss.find_all_img("button_selected.png", confidence)
@@ -501,7 +501,7 @@ def run_main_code(form_data):
             
             form_obj = Form(heading, box, form_box)
             form_obj.establish_borders(screen_ss)
-            form_obj.find_buttons(0.85)
+            form_obj.find_buttons(0.80)
             if(len(form_obj.buttons) != headings_options_count[heading]):
                 incorrect_buttons.add(heading)
                 print(f"Incorrect buttons for {heading}: {len(form_obj.buttons)}")
