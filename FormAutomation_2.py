@@ -530,7 +530,7 @@ def run_main_code(form_data):
     # print(f"Found legit: {found_legit}")
     print(f"Never legit: {never_legit}")
     print(f"Incorrect buttons: {incorrect_buttons}")
-    
+    block = input("Press enter to continue")
     pass
 
 if __name__ == '__main__':
