@@ -197,9 +197,12 @@ class Form:
         return self.buttons
     
     def click_button(self, button_index):
-        moveTo(self.buttons[button_index].centre)
-        click()
-        moveTo(100, 400)
+        try:
+            moveTo(self.buttons[button_index].centre)
+            click()
+            moveTo(100, 400)
+        except:
+            pass
     def click_last(self):
         moveTo(self.buttons[-1].centre)
         click()
@@ -332,7 +335,7 @@ def run_main_code(form_data):
         "M1810":4,
         "M1820":4,
         "M1830":4,
-        "M1840":4,
+        "M1840":5,
         "M1845":4,
         "M1850":6,
         "M1860":7,
@@ -459,7 +462,7 @@ def run_main_code(form_data):
     incorrect_buttons = set()
     
     problem_paths = ["problem_1.png", "problem_2.png"]
-    remaining_headings = list(headings_options_count.keys())
+    remaining_headings = list(headings_choices.keys())
     while len(remaining_headings) > 0:
         screen_ss = ScreenShot((0, top_bar, screen_size[0], screen_size[1]-top_bar-bottom_bar), "first_ss.png")
         problems = []
@@ -479,7 +482,7 @@ def run_main_code(form_data):
             print("End found")
             break
 
-        found = screen_ss.find_texts(headings_options_count.keys(), annotations)
+        found = screen_ss.find_texts(headings_choices.keys(), annotations)
         (found_text.add(head) for head in found.keys())
         found = get_legit_headings(found, screen_ss)
         (found_legit.add(head) for head in found.keys())
@@ -522,19 +525,19 @@ def run_main_code(form_data):
         scroll(-100)
     
     
-    never_found = set(headings_options_count.keys()) - found_text
-    never_legit = set(headings_options_count.keys()) - found_legit
+    never_found = set(headings_choices.keys()) - found_text
+    never_legit = set(headings_choices.keys()) - found_legit
     
     # write to file:
     output_file = open("output.txt", "w")
-    print(f"Found: {found_text}")
+    print(f"Found: {list(found_text)}")
     print(f"Never found: {never_found}")
-    output_file.write(f"Found: {found_text}\n")
+    output_file.write(f"Found: {list(found_text)}\n")
     # print(f"Found legit: {found_legit}")
     print(f"Never legit: {never_legit}")
     output_file.write(f"Never found: {never_found}\n")
     output_file.close()
-    print(f"Incorrect buttons: {incorrect_buttons}")
+    print(f"Incorrect buttons: {list(incorrect_buttons)}")
     block = input("Press enter to continue")
     pass
 
