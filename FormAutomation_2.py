@@ -257,7 +257,7 @@ def num_within_threshold(num, target, threshold):
 def run_main_code(form_data):
     screen_size = size()
     top_bar = 120
-    bottom_bar = 80
+    bottom_bar = 30
     
     
     # lines = screen_ss.get_lines()
@@ -525,10 +525,15 @@ def run_main_code(form_data):
     never_found = set(headings_options_count.keys()) - found_text
     never_legit = set(headings_options_count.keys()) - found_legit
     
+    # write to file:
+    output_file = open("output.txt", "w")
     print(f"Found: {found_text}")
     print(f"Never found: {never_found}")
+    output_file.write(f"Found: {found_text}\n")
     # print(f"Found legit: {found_legit}")
     print(f"Never legit: {never_legit}")
+    output_file.write(f"Never found: {never_found}\n")
+    output_file.close()
     print(f"Incorrect buttons: {incorrect_buttons}")
     block = input("Press enter to continue")
     pass
