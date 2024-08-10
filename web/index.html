@@ -8,11 +8,6 @@
 </head>
 <body>
 
-    <!-- <div>
-        <label>M0069</label><br>
-        <input type="radio" name="M0069" value="2"> 2
-    </div> -->
-
     <div id="main-form"></div>
     <button onclick="submitForm()">Submit</button>
 
@@ -73,6 +68,7 @@
             
             console.log(selectedOptions);
             eel.run_main_code(selectedOptions);
+            close();
         }
 
         document.addEventListener('DOMContentLoaded', function() {

@@ -478,10 +478,10 @@ def run_main_code(form_data):
             break
         
         found = screen_ss.find_texts(headings_options_count.keys(), annotations)
-        found = get_legit_headings(found, screen_ss)
-        
         (found_text.add(head) for head in found.keys())
+        found = get_legit_headings(found, screen_ss)
         (found_legit.add(head) for head in found.keys())
+        
 
         # headings_boxes = found
         print("heading text boxes:", found)
