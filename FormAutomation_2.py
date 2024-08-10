@@ -514,7 +514,7 @@ def run_main_code(form_data):
             incorrect_buttons.discard(heading)
             
             form_obj.unselect_button()
-            form_obj.click_button(headings_choices[heading])
+            form_obj.click_button(headings_choices[heading]-1)
             moveTo(100, screen_size[1]/2)
             # print(form_obj.buttons)
             # moveTo((right_border, bottom_border))
