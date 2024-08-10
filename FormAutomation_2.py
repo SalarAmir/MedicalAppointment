@@ -1,8 +1,7 @@
 import eel
 import time
-import os
 import numpy as np
-from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move, confirm
+from pyautogui import screenshot, locateAll, locateAllOnScreen, click, moveTo, size, scroll, move
 from requests import post
 
 eel.init('web')
@@ -472,11 +471,11 @@ def run_main_code(form_data):
         
         annotations = get_annotations(screen_ss)["data"]["textAnnotations"]
         end = screen_ss.find_text("Rehab", annotations)
-        
-        if(end):
+        end_2 = screen_ss.find_all_img("end.png", 0.8)
+        if(len(end_2) > 0 or end):
             print("End found")
             break
-        
+
         found = screen_ss.find_texts(headings_options_count.keys(), annotations)
         (found_text.add(head) for head in found.keys())
         found = get_legit_headings(found, screen_ss)
