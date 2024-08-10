@@ -228,9 +228,7 @@ def find_all_img_in_bounds(image, bound_box, confidence):
     return found_coords
 
 def sort_boxes(boxes):
-    boxes.sort(key=lambda x: x.l)
-    boxes.sort(key=lambda x: x.t)
-    return boxes
+    return sorted(boxes, key=lambda box: (box.l,box.t))
 
 def num_within_threshold(num, target, threshold):
     return abs(num - target) < threshold
