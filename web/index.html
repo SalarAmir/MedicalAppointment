@@ -12,25 +12,39 @@
     <button onclick="submitForm()">Submit</button>
 
     <script>
+        const map = {
+            "Cognitive Patterns": {
+                "Alert and oriented": [["B1300",1], ["C0100", 1], ["C0200", 3], ["C0300A", 3],["C0300B",2],["C0300C",1],["C0400A",2],["C0400B",1],["C0400C",1],["M1700",0],["M1710",0],["M1720",0],["C1310A",0],["C1310B",0],["C1310C",0],["C1310D",0]],
+                "Forgetful/confused": [["B1300",1], ["C0100", 1], ["C0200", 2], ["C0300A", 2],["C0300B",1],["C0300C",0],["C0400A",1],["C0400B",2],["C0400C",2],["M1700",1],["M1710",2],["M1720",0],["C1310A",0],["C1310B",0],["C1310C",2],["C1310D",0]],
+                "Unable to follow commands": [["B1300",6], ["C0100", 0],["M1700",3],["M1710",4],["M1720",0],["C1310A",0],["C1310B",1],["C1310C",1],["C1310D",0]]
+            }
+        }
+        const defaults =[
+            ["D0150A1",1],
+            ["D0150A2",0],
+            ["D0150B1",1],
+            ["D0150B2",0],
+            ["D0700", 2]
+        ]
 
-
-        function createInputBox(heading, numButtons){
+        function createInputBox(prompt, options){
             const form = document.createElement('form');
             const label = document.createElement('label');
-            label.textContent = heading;
+            label.textContent = prompt;
             form.appendChild(label);
 
-            for (let i = 0; i < numButtons; i++) {
-                const radioId = `${heading}-${i+1}`;
+            for (let i = 0; i < options.length; i++) {
+                const radioId = `${prompt}-${i+1}`;
                 const input = document.createElement('input');
                 input.type = 'radio';
                 input.id = radioId;
-                input.name = heading;
-                input.value = `${i+1}`;
+                input.name = prompt;
+                // input.value = `${i+1}`;
+                input.value = options[i];
+
                 form.appendChild(input);
-                // form.appendChild(document.createTextNode(i));
                 inputLabel = document.createElement('label');
-                inputLabel.textContent = `${i+1}`;
+                inputLabel.textContent = options[i];
                 inputLabel.htmlFor = radioId;
 
                 form.appendChild(input);
@@ -40,45 +54,82 @@
             document.getElementById('main-form').appendChild(form);
         }
 
+        // function createInputBox(heading, numButtons){
+        //     const form = document.createElement('form');
+        //     const label = document.createElement('label');
+        //     label.textContent = heading;
+        //     form.appendChild(label);
 
+        //     for (let i = 0; i < numButtons; i++) {
+        //         const radioId = `${heading}-${i+1}`;
+        //         const input = document.createElement('input');
+        //         input.type = 'radio';
+        //         input.id = radioId;
+        //         input.name = heading;
+        //         input.value = `${i+1}`;
 
+        //         if(defaultValue && defaultValue === i+1){
+        //             input.checked = true;
+        //         }
 
-        // document.getElementById('setupForm').onsubmit = function(e) {
-        //     e.preventDefault();
-        //     // const formData = {
-        //     //     username: document.getElementById('username').value,
-        //     //     delay: document.getElementById('delay').value
-        //     // };
-            
-        //     if (confirm('Are you sure you want to start the automation?')) {
-        //         // eel.run_main_code(formData);
+        //         form.appendChild(input);
+        //         // form.appendChild(document.createTextNode(i));
+        //         inputLabel = document.createElement('label');
+        //         inputLabel.textContent = `${i+1}`;
+        //         inputLabel.htmlFor = radioId;
+
+        //         form.appendChild(input);
+        //         form.appendChild(inputLabel);
         //     }
+
+        //     document.getElementById('main-form').appendChild(form);
         // }
 
         function submitForm() {
             const selectedOptions = []
             const form = document.getElementById('main-form');
             form.querySelectorAll('input[type="radio"]:checked').forEach((input) => {
-                selectedOptions.push({
-                    name: input.name,
-                    value: input.value
-                });
+                form_buttons = map[input.name][input.value]
+                console.log(map[input.name], "input.value", input.value);
+                form_buttons.forEach((button) => {
+                    console.log("yh",button);
+                    selectedOptions.push({
+                        name: button[0],
+                        value: button[1]
+                    });
+                })
+                // selectedOptions.push({
+                //     name: input.name,
+                //     value: input.value
+                // });
             });
+            defaults.forEach((button) => {
+                selectedOptions.push({
+                    name: button[0],
+                    value: button[1]
+                });
+            })
             // const formData = new FormData(form);
             
             console.log(selectedOptions);
             eel.run_main_code(selectedOptions);
-            close();
+            // close();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             // createInputBox('M0069', 5);
-            for (const [heading, numButtons] of Object.entries(headings_options_count)) {
-                createInputBox(heading, numButtons);
+            // for (const [heading, numButtons] of Object.entries(headings_options_count)) {
+            //     createInputBox(heading, numButtons);
+            // }
+            for(const [prompt, options] of Object.entries(map)){
+                // console.log(prompt, Object.keys(options));
+                createInputBox(prompt, Object.keys(options));
             }
         });
 
-        
+    const headings_default_values = {
+
+    }
     const headings_options_count = {
         "M0069" : 2,
 
