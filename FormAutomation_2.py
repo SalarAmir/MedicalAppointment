@@ -148,9 +148,11 @@ class Form:
         self.border_box = border_box
         
         self.buttons = []
-        self.selected = None
+        self.selected = []
         self.button_path = "button.png"
         self.selected_button_path = "button_selected.png"
+        self.square_path = "square.png"
+        self.square_selected_path = "square_selected.png"
         
         self.ss = None
         self.ss = ScreenShot(self.border_box.box_tuple, f"form_{self.heading}.png")
@@ -182,15 +184,28 @@ class Form:
         try:
             selected_found = self.ss.find_all_img(self.selected_button_path, confidence)
             self.buttons += selected_found
-            self.selected = selected_found[0]
+            self.selected += selected_found
         except:
             pass
-            
+        
+        # try:
+        #     self.buttons += self.ss.find_all_img(self.square_path, confidence)
+        # except:
+        #     pass
+        
+        # try:
+        #     selected_found = self.ss.find_all_img(self.square_selected_path, confidence)
+        #     self.buttons += selected_found
+        #     self.selected += selected_found
+        # except:
+        #     pass
+            # self.selected = selected_found[0]
         # remove buttons which are within pixels of each other
         if(len(self.buttons) == 0):
             return self.buttons
         self.buttons = [self.buttons[0]] + [self.buttons[i] for i in range(1, len(self.buttons)) if not any(abs(self.buttons[i].l - self.buttons[j].l) < 4 and abs(self.buttons[i].t - self.buttons[j].t) < 4 for j in range(i))]
-        
+        if(len(self.selected) >0):
+            self.selected = [self.selected[0]] + [self.selected[i] for i in range(1, len(self.selected)) if not any(abs(self.selected[i].l - self.selected[j].l) < 4 and abs(self.selected[i].t - self.selected[j].t) < 4 for j in range(i))]
 
         # self.buttons += self.ss.find_all_img("button_selected.png", confidence)
         self.buttons = sort_boxes(self.buttons)
@@ -208,10 +223,11 @@ class Form:
         click()
         moveTo(100, 400)
     def unselect_button(self):
-        if self.selected:
-            moveTo(self.selected.centre)
+        for button in self.selected:
+            moveTo(button.centre)
             click()
-            moveTo(100, 400)
+        
+        moveTo(100, 400)
     def click_all_buttons(self):
         for button in self.buttons:
             moveTo(button.centre)
@@ -324,6 +340,8 @@ def run_main_code(form_data):
         "D0150I1":4,
         "D0150I2":4,
         
+        "D0700":7,
+        
         "M1740":3,
         "M1745":6,
         
@@ -332,11 +350,19 @@ def run_main_code(form_data):
         "M1800":4,
         "M1810":4,
         "M1820":4,
-        "M1830":4,
+        "M1830":7,
         "M1840":5,
         "M1845":4,
         "M1850":6,
         "M1860":7,
+        
+        "GG0130A":22,
+        "GG0130B":22,
+        "GG0130C":22,
+        "GG0130E":22,
+        "GG0130F":22,
+        "GG0130G":22,
+        "GG0130H":22,
         
         "GG0170A1":11,
         "GG0170A2":11,
@@ -471,13 +497,14 @@ def run_main_code(form_data):
             moveTo(problem.centre)
             click()
             time.sleep(1)
-            moveTo(100, screen_size[1]/2)
+            moveTo(200, screen_size[1]/2)
         
         annotations = get_annotations(screen_ss)["data"]["textAnnotations"]
         end = screen_ss.find_text("Rehab", annotations)
         end_2 = screen_ss.find_all_img("end.png", 0.8)
-        if(len(end_2) > 0 or end):
-            print("End found")
+        if(end):
+            
+            print("End found", end_2, end)
             break
 
         found = screen_ss.find_texts(headings_choices.keys(), annotations)
@@ -487,7 +514,7 @@ def run_main_code(form_data):
         
 
         # headings_boxes = found
-        print("heading text boxes:", found)
+        # print("heading text boxes:", found)
         # screen_ss = ScreenShot((0, 120, screen_size[0], screen_size[1]-120-40), "first_ss.png")
         # populate forms on screen:
         for heading, box in found.items():
@@ -512,8 +539,19 @@ def run_main_code(form_data):
             incorrect_buttons.discard(heading)
             
             form_obj.unselect_button()
-            form_obj.click_button(int(headings_choices[heading])-1)
-            moveTo(100, screen_size[1]/2)
+            time.sleep(1)
+            form_obj.find_buttons(0.80)
+            pos_array = []
+            if isinstance(headings_choices[heading], list):
+                pos_array = headings_choices[heading]
+            else:
+                pos_array = [headings_choices[heading]]
+            
+            for pos in pos_array:
+                form_obj.click_button(pos)
+                # time.sleep(1)
+            # form_obj.click_button(int(headings_choices[heading]))
+            moveTo(200, screen_size[1]/2)
             # print(form_obj.buttons)
             # moveTo((right_border, bottom_border))
             # time.sleep(2)

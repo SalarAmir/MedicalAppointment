@@ -12,11 +12,19 @@
     <button onclick="submitForm()">Submit</button>
 
     <script>
+
         const map = {
             "Cognitive Patterns": {
                 "Alert and oriented": [["B1300",1], ["C0100", 1], ["C0200", 3], ["C0300A", 3],["C0300B",2],["C0300C",1],["C0400A",2],["C0400B",1],["C0400C",1],["M1700",0],["M1710",0],["M1720",0],["C1310A",0],["C1310B",0],["C1310C",0],["C1310D",0]],
                 "Forgetful/confused": [["B1300",1], ["C0100", 1], ["C0200", 2], ["C0300A", 2],["C0300B",1],["C0300C",0],["C0400A",1],["C0400B",2],["C0400C",2],["M1700",1],["M1710",2],["M1720",0],["C1310A",0],["C1310B",0],["C1310C",2],["C1310D",0]],
                 "Unable to follow commands": [["B1300",6], ["C0100", 0],["M1700",3],["M1710",4],["M1720",0],["C1310A",0],["C1310B",1],["C1310C",1],["C1310D",0]]
+            },
+            "Functional Status":{
+                "#0":[["M1800",0], ["M1810",0], ["M1820",0], ["M1830",0], ["M1840",0], ["M1845",0], ["M1850",0], ["M1860",0], ["GG0130A",[0,11]], ["GG0130B",[0,11]], ["GG0130C",[0,11]], ["GG0130E",[0,11]], ["GG0130F",[0,11]], ["GG0130G",[0,11]], ["GG0130H",[0,11]]],
+                "#1":[["M1800",1], ["M1810",1], ["M1820",1], ["M1830",1], ["M1840",1], ["M1845",1], ["M1850",1], ["M1860",1], ["GG0130A",[1,11]], ["GG0130B",[1,11]], ["GG0130C",[1,11]], ["GG0130E",[1,11]], ["GG0130F",[1,11]], ["GG0130G",[1,11]], ["GG0130H",[1,11]]],
+                "#2":[["M1800",2], ["M1810",2], ["M1820",2], ["M1830",2], ["M1840",1], ["M1845",2], ["M1850",1], ["M1860",2], ["GG0130A",[1,12]], ["GG0130B",[1,12]], ["GG0130C",[3,12]], ["GG0130E",[3,12]], ["GG0130F",[3,12]], ["GG0130G",[3,12]], ["GG0130H",[3,14]]],
+                "#3":[["M1800",3], ["M1810",2], ["M1820",3], ["M1830",5], ["M1840",3], ["M1845",3], ["M1850",3], ["M1860",5], ["GG0130A",[2,12]], ["GG0130B",[2,12]], ["GG0130C",[5,15]], ["GG0130E",[5,14]], ["GG0130F",[4,13]], ["GG0130G",[5,13]], ["GG0130H",[5,15]]],
+                "#4":[["M1800",3], ["M1810",3], ["M1820",3], ["M1830",6], ["M1840",4], ["M1845",3], ["M1850",4], ["M1860",6], ["GG0130A",[5,16]], ["GG0130B",[5,16]], ["GG0130C",[5,16]], ["GG0130E",[5,16]], ["GG0130F",[5,16]], ["GG0130G",[5,16]], ["GG0130H",[5,16]]],
             }
         }
         const defaults =[
@@ -54,37 +62,6 @@
             document.getElementById('main-form').appendChild(form);
         }
 
-        // function createInputBox(heading, numButtons){
-        //     const form = document.createElement('form');
-        //     const label = document.createElement('label');
-        //     label.textContent = heading;
-        //     form.appendChild(label);
-
-        //     for (let i = 0; i < numButtons; i++) {
-        //         const radioId = `${heading}-${i+1}`;
-        //         const input = document.createElement('input');
-        //         input.type = 'radio';
-        //         input.id = radioId;
-        //         input.name = heading;
-        //         input.value = `${i+1}`;
-
-        //         if(defaultValue && defaultValue === i+1){
-        //             input.checked = true;
-        //         }
-
-        //         form.appendChild(input);
-        //         // form.appendChild(document.createTextNode(i));
-        //         inputLabel = document.createElement('label');
-        //         inputLabel.textContent = `${i+1}`;
-        //         inputLabel.htmlFor = radioId;
-
-        //         form.appendChild(input);
-        //         form.appendChild(inputLabel);
-        //     }
-
-        //     document.getElementById('main-form').appendChild(form);
-        // }
-
         function submitForm() {
             const selectedOptions = []
             const form = document.getElementById('main-form');
@@ -113,7 +90,7 @@
             
             console.log(selectedOptions);
             eel.run_main_code(selectedOptions);
-            // close();
+            close();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
