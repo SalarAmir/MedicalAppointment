@@ -188,18 +188,18 @@ class Form:
         except:
             pass
         
-        # try:
-        #     self.buttons += self.ss.find_all_img(self.square_path, confidence)
-        # except:
-        #     pass
+        try:
+            self.buttons += self.ss.find_all_img(self.square_path, confidence)
+        except:
+            pass
         
-        # try:
-        #     selected_found = self.ss.find_all_img(self.square_selected_path, confidence)
-        #     self.buttons += selected_found
-        #     self.selected += selected_found
-        # except:
-        #     pass
-            # self.selected = selected_found[0]
+        try:
+            selected_found = self.ss.find_all_img(self.square_selected_path, confidence)
+            self.buttons += selected_found
+            self.selected += selected_found
+        except:
+            pass
+            self.selected = selected_found[0]
         # remove buttons which are within pixels of each other
         if(len(self.buttons) == 0):
             return self.buttons
@@ -285,9 +285,12 @@ def run_main_code(form_data):
         "M0069" : 2,
         "A1110B": 3,
         
+        "M0150": 13,
         "M0080": 4,
         "M0100": 8,
         "M0110":4,
+        
+        "A1250":5,
         
         "HCS_0110_Facility": 2,
         # "Blood Pressure": 2,
