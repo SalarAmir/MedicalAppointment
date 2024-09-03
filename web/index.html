@@ -27,9 +27,48 @@
                 "#4":[["M1800",3], ["M1810",3], ["M1820",3], ["M1830",6], ["M1840",4], ["M1845",3], ["M1850",4], ["M1860",6], ["GG0130A",[5,16]], ["GG0130B",[5,16]], ["GG0130C",[5,16]], ["GG0130E",[5,16]], ["GG0130F",[5,16]], ["GG0130G",[5,16]], ["GG0130H",[5,16]]],
             },
             "Home":{
-                "Family":                  [["A1250",2]],
-                "Assisted Living Facility":[["A1250",2]],
-                "Alone":                   [["A1250",1]]
+                "Family":                  [["A1250",2], ["M1100",0]],
+                "Assisted Living Facility":[["A1250",2], ["M1100",2]],
+                "Alone":                   [["A1250",1], ["M1100",1]]
+            },
+            "Diagnosis":{
+                "PVD": [["M1028",[3,1,2]]],
+                "DM":  [["M1028",[0,4,2]]],
+                "None":[["M1028",[0,1,5]]]
+            },
+            "Hearing":{
+                "No Hearing Problem":[["B0200",0]],
+                "Hearing Problem":[]
+            },
+            "Vision":{
+                "No Vision Problem":[["B1000",0]],
+                "Vision Problem":[]
+            },
+            "Respiratory":{
+                "No SOB":[["M1400",0]],
+                "SOB":[["M1400",2]]
+            },
+            "Bowel":{
+                "Normal Bowel":[["M1620",0], ["M1630",0]],
+                "Bowel Incontinence":[["M1620",2]],
+                "With Colostomy":[["M1630",1]]
+            },
+            "Urinary":{
+                "Normal Bladder":[["M1610",0]],
+                "Bladder Incontinence":[["M1610",1]],
+                "With Catheter":[["M1610",2]]
+            },
+            "Pressure Ulcer":{
+                "No Pressure Ulcer":[["M1306",0], ["M1322",0], ["M1322",4]],
+                "Pressure Ulcer":[["M1306",1]]
+            },
+            "Stasis Ulcer":{
+                "No Stasis Ulcer":[],
+                "Stasis Ulcer":[]
+            },
+            "Injectables":{
+                "Injection":[["M2030",4]],
+                "No Injection":[["M2030",5]]
             }
         }
         const defaults =[
